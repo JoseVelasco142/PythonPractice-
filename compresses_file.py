@@ -41,26 +41,30 @@ class CheckFile(object):
 		days = (datetime.today() - self.file_date).days
 		return days 
 		
-def compresse_file(file):
-	gzfile = file + ".gz"
-	fgz = cStringIO.StringIO()
-	gzip_file = gzip.GzipFile(filename=file,
-		mode='wb',fileobj=fgz)
-	gzip_file.write(gzfile)
+def compresse_file(file,ftime):
+	data = open(file,'rb')
+	outputfile = file +".gz"
+	gzip_file = gzip.GzipFile(outputfile,mode='wb',mtime=ftime)
+	gzip_file.write(data.read())
+	gzip_file.flush()
 	gzip_file.close()
-	gzfile.close()
-	#os.unlink(file)
+	data.close()
+	os.utime(outputfile,(ftime,ftime))
+	os.unlink(file)
 	
 
-if __name__ == '__main__':
-	os.chdir(lookinto)
+def main():
 	print('{0:10}{1:10}{2:10}'.format("Size","Date","File Name"))
 	for file in glob.glob(ftype):
 		f = CheckFile(file)
 		if f.days_of_days_old() == nday:
 			print('{0:10}{1:10}{2:10}'.format(f.size(),f.date(),f.fname))
 			print("Compressing...")
-			compresse_file(file)
+			compresse_file(file,int(f.unix_time))
 			print("file status after compressesion")
 			f = CheckFile(file + ".gz")
 			print('{0:10}{1:10}{2:10}'.format(f.size(),f.date(),f.fname))
+
+if __name__ == '__main__':
+	os.chdir(lookinto)
+	main()
