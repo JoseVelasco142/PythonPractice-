@@ -22,14 +22,11 @@ class CheckFile(object):
 		self.fname = fname
 	def size(self):
 		'print size in bytes MB'
-		size = int(os.path.getsize(self.fname))
-		if size < 1023:
-			return `size` + ' byte '
-		elif size > 1023 and size <= 102400:
-			return `(size >> 10)` + ' kB '
-		elif size > 102400:
-			return `(size >> 20)` + ' MB '
-		else:	return size
+		num = os.path.getsize(self.fname)
+		for s in [ 'bytes','KB','MB','GB','TB' ]:
+			if num < 1024.0:
+				return "%3.1f %s" % (num,s) 
+			num /= 1024.0
 	def date(self):
 		'print file date'
 		self.unix_time = os.path.getmtime(self.fname)
