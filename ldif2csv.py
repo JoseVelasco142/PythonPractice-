@@ -1,4 +1,3 @@
-
 #!/usr/bin/env python
 
 
@@ -8,24 +7,14 @@ import csv
 import sys
 
 # Skip entries
-skip = [ "dn", "loginShell", "uid", "gid", "cn",
+skip = [ "dn", "loginShell","gid", "cn",
          "userPassword","uidNumber", "gidNumber",
          "homeDirectory", "displayName",
          "objectClass", "uidNumber"  ]
 
-# CSV Header field
-map_fileds = dict(  givenName = "First Name",
-                    sn = "Last Name",
-                    uid = "Login ID",
-                    telephoneNumber = "Mobile No.",
-                    mail = "Email ID",
-                    Profile = "Profile",
-                    pwdPolicySubentry = "Password Policy (y/n)"
-                )
-
 # CSV Header
 header = [ "First Name", "Last Name", "Login ID", "Mobile No.",
-            "Email ID", "Profile", "Password Policy (y/n)" ]
+           "Email ID", "Profile", "Password Policy (y/n)" ]
 
 def write_file():
         with open('ldif.csv','wb') as output_file:
@@ -39,17 +28,14 @@ def write_file():
                                         myrow = []
                                         continue
                                 atribute, value = line.split(":")
-                                v = map_fileds.get(atribute,"None")
+				if atribute in skip: continue
                                 if 'pwdPolicySubentry' == atribute:
                                         value = "Yes"
                                 else:
                                         pass #myrow.append(value.strip())
-                                if v != "None":
-                                        myrow.append(value.strip())
+                                myrow.append(value.strip())
                 writer.writerow(myrow)
 
-        print myrow
-        print header
 
 
 if __name__ == '__main__':
